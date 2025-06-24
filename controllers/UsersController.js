@@ -13,6 +13,10 @@ class UsersController {
       return res.status(400).json({ error: 'Missing password' });
     }
 
+    if (!dbClient.isAlive()) {
+      return res.status(500).json({ error: 'Database not connected' });
+    }
+
     try {
       const userExists = await dbClient.db.collection('users').findOne({ email });
       if (userExists) {
@@ -20,11 +24,7 @@ class UsersController {
       }
 
       const hashedPassword = sha1(password);
-      const newUser = {
-        email,
-        password: hashedPassword,
-      };
-
+      const newUser = { email, password: hashedPassword };
       const result = await dbClient.db.collection('users').insertOne(newUser);
       return res.status(201).json({ id: result.insertedId, email });
     } catch (err) {
