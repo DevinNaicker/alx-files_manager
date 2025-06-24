@@ -10,8 +10,7 @@ class DBClient {
     this.client = new MongoClient(uri, { useUnifiedTopology: true });
     this.client.connect().then(() => {
       this.db = this.client.db(database);
-    }).catch((err) => {
-      console.error('MongoDB connection error:', err);
+    }).catch(() => {
       this.db = null;
     });
   }
@@ -28,8 +27,8 @@ class DBClient {
     return this.db ? this.db.collection('files').countDocuments() : 0;
   }
 
-  async usersCollection() {
-    return this.db.collection('users');
+  get usersCollection() {
+    return this.db?.collection('users');
   }
 }
 

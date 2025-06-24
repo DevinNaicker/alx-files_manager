@@ -14,18 +14,19 @@ export default class UsersController {
       return res.status(400).json({ error: 'Missing password' });
     }
 
-    const user = await (await dbClient.usersCollection()).findOne({ email });
-    if (user) {
+    const userExists = await dbClient.usersCollection.findOne({ email });
+    if (userExists) {
       return res.status(400).json({ error: 'Already exist' });
     }
 
-    const hashedPassword = sha1(password);
-    const insertionInfo = await (await dbClient.usersCollection()).insertOne({
+    const newUser = {
       email,
-      password: hashedPassword,
-    });
+      password: sha1(password),
+    };
 
-    const userId = insertionInfo.insertedId.toString();
+    const result = await dbClient.usersCollection.insertOne(newUser);
+    const userId = result.insertedId.toString();
+
     return res.status(201).json({ email, id: userId });
   }
 }
