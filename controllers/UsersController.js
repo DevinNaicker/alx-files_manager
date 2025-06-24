@@ -23,10 +23,11 @@ export default class UsersController {
       return;
     }
 
+    const hashedPassword = sha1(password);
     const insertionInfo = await (await dbClient.usersCollection())
-      .insertOne({ email, password: sha1(password) });
-    const userId = insertionInfo.insertedId.toString();
+      .insertOne({ email, password: hashedPassword });
 
+    const userId = insertionInfo.insertedId.toString();
     res.status(201).json({ email, id: userId });
   }
 }
