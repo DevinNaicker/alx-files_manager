@@ -5,18 +5,15 @@ class DBClient {
     const host = process.env.DB_HOST || 'localhost';
     const port = process.env.DB_PORT || 27017;
     const database = process.env.DB_DATABASE || 'files_manager';
-
     const uri = `mongodb://${host}:${port}`;
-    this.client = new MongoClient(uri, { useUnifiedTopology: true });
 
-    this.client.connect()
-      .then(() => {
-        this.db = this.client.db(database);
-      })
-      .catch((err) => {
-        console.error('MongoDB connection error:', err);
-        this.db = null;
-      });
+    this.client = new MongoClient(uri, { useUnifiedTopology: true });
+    this.client.connect().then(() => {
+      this.db = this.client.db(database);
+    }).catch((err) => {
+      console.error('MongoDB connection error:', err);
+      this.db = null;
+    });
   }
 
   isAlive() {

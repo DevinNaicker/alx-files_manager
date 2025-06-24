@@ -4,30 +4,28 @@ import dbClient from '../utils/db';
 
 export default class UsersController {
   static async postNew(req, res) {
-    const email = req.body ? req.body.email : null;
-    const password = req.body ? req.body.password : null;
+    const { email, password } = req.body || {};
 
     if (!email) {
-      res.status(400).json({ error: 'Missing email' });
-      return;
+      return res.status(400).json({ error: 'Missing email' });
     }
 
     if (!password) {
-      res.status(400).json({ error: 'Missing password' });
-      return;
+      return res.status(400).json({ error: 'Missing password' });
     }
 
     const user = await (await dbClient.usersCollection()).findOne({ email });
     if (user) {
-      res.status(400).json({ error: 'Already exist' });
-      return;
+      return res.status(400).json({ error: 'Already exist' });
     }
 
     const hashedPassword = sha1(password);
-    const insertionInfo = await (await dbClient.usersCollection())
-      .insertOne({ email, password: hashedPassword });
+    const insertionInfo = await (await dbClient.usersCollection()).insertOne({
+      email,
+      password: hashedPassword,
+    });
 
     const userId = insertionInfo.insertedId.toString();
-    res.status(201).json({ email, id: userId });
+    return res.status(201).json({ email, id: userId });
   }
 }
